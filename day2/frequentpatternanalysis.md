@@ -75,4 +75,7 @@ tid|items
 
 - Possible association rules
   - Beer -> Diaper (60%, 100%)
+    - confidence : S(Beer,Diaper) = 3 / S(Beer) = 3
   - Diaper -> Beer (75%, 100%)
+    - confidence : S(Beer,Diaper) = 3 / S(Diaper) = 4
+  
