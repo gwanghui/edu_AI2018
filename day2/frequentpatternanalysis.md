@@ -25,3 +25,13 @@ tid|items
 
 - Items = sentences
 - Baskets = a set of sentences
+
+- 위가 나빠서 위장약을 먹으면 위를 보호하는 위약을 먹고 간에 부담이 되니 간약을 함께 먹는다.
+
+tid|items
+--|--
+P1| A,B,C
+P2| A,B,D
+P3| B,E
+P4| A,C,E
+P5| C,D,E
