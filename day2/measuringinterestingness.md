@@ -23,3 +23,15 @@
 - lift < 1.0 : Negatively correlated
 - lift > 1.0 : Positively correlated
   
+### Lift도 문제가 있습니다. !?
+- Null-invariance : 우리가 보통 measuring을 할때 Independent한 데이터가 존재할때 lift의 값이 다르다!
+- confidence는 Null-invariance한 measure가 된다. 어?
+#### Four Null-Invariant Measure
+- all_conf(A,B) = sup(AUB) / max{sup(A),sup(B)} = min{P(A|B),P(B|A)}
+- max_conf(A,B) = max{P(A|B),P(B|A)}
+- kulc (A,B) = 1/2 (P(A|B) + P(B|A))
+- cosine (A,B) = sqrt(P(A|B) * P(B|A))
+
+- if < 0.5 negatively
+- if > 0.5 positively
+
