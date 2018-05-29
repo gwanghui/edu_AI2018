@@ -109,6 +109,7 @@ tid|items
   
   - data
   tid | items
+  --|--
   10 | A,C,D
   20 | B,C,E
   30 | A,B,C,E
@@ -117,6 +118,7 @@ tid|items
  - first
  
  Itemset | sup
+ --|--
  {A} | 2
  {B} | 3
  {C} | 3
@@ -126,6 +128,7 @@ tid|items
 - Updated Itemsets
 
  Itemset | sup
+ --|--
  {A} | 2
  {B} | 3
  {C} | 3
