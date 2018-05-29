@@ -65,4 +65,14 @@ P5| C,D,E
   
 - example
 
+tid|items
+--|--
+10| Beer,Nuts,Diaper
+20| Beer,Coffe,Diaper
+30| Beer, Diaper, Eggs
+40| Nuts, Eggs, Milk
+50| Nuts, Coffee, Diaper, Eggs
 
+- Possible association rules
+  - Beer -> Diaper (60%, 100%)
+  - Diaper -> Beer (75%, 100%)
