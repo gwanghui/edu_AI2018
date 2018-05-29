@@ -145,3 +145,14 @@ tid|items
  {B,E} | 3
  {C,E} | 2
  
+ - Closed Itemset
+  - Super Set에서 해당 frequent보다 같은게 없으면 닫혀 있다고 한다.
+  
+ - Closed Frequent Itemset
+  - Super Set에서 minnum frequent 보다 크고 해당 frequent 값보다 같은게 없으면 닫혀 있다고 한다.
+  
+ - Max Itemsets
+  - 젤 큰게 슈퍼셋에 존재하지 않으면 닫혀 있다고 한다.
+  
+ - 정보 손실율 기준으로 보면 closed 는 0 max는 좀 있고 압축율로 보면 closed는 낮고 max는 높고
+ 
