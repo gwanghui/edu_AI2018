@@ -26,7 +26,13 @@ tid|items
 - Items = sentences
 - Baskets = a set of sentences
 
+
+- Items = drugs
+- Baskets = patients
+
 - 위가 나빠서 위장약을 먹으면 위를 보호하는 위약을 먹고 간에 부담이 되니 간약을 함께 먹는다.
+- 사후 추적관찰을 하면서 확인해본다.
+- detect combinations of drugs
 
 tid|items
 --|--
@@ -35,3 +41,8 @@ P2| A,B,D
 P3| B,E
 P4| A,C,E
 P5| C,D,E
+
+- 부작용 발견에도 많이 적용함 ex) 고산병 치료제 - 비아그라
+
+
+
