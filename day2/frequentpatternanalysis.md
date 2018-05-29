@@ -115,7 +115,7 @@ tid|items
   30 | A,B,C,E
   40 | B,E
  
- - first
+ - first Scan
  
  Itemset | sup
  --|--
@@ -132,4 +132,15 @@ tid|items
  {A} | 2
  {B} | 3
  {C} | 3
-  {e} | 3
+ {e} | 3
+
+- second scan
+ Itemset | sup
+ --|--
+ {A,B} | 1
+ {A,C} | 2
+ {A,E} | 1
+ {B,C} | 2
+ {B,E} | 3
+ {C,E} | 2
+ 
