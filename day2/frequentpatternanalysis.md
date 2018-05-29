@@ -100,7 +100,7 @@ tid|items
 50| N, C, D, E, M
 
 
-## Downward Closure Property
+### Downward Closure Property
 - frequent한 itemset의 부분집합도 반드시 frequent하다. 역,이는 성립하지 않는다.
   - if {b,d,n} is frequent so is {beer, diaper} 
   
