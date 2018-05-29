@@ -79,3 +79,11 @@ tid|items
   - Diaper -> Beer (75%, 100%)
     - confidence : S(Beer,Diaper) = 3 / S(Diaper) = 4
   
+- How Many Possible itemsets exist?
+  - 1-itemset
+  - 2-itemset
+  - 3-itemset
+  - n-itemset
+  
+
+  
