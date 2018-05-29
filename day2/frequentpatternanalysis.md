@@ -135,6 +135,7 @@ tid|items
  {e} | 3
 
 - second scan
+
  Itemset | sup
  --|--
  {A,B} | 1
