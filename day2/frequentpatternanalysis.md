@@ -100,4 +100,33 @@ tid|items
 50| N, C, D, E, M
 
 
+## Downward Closure Property
+- frequent한 itemset의 부분집합도 반드시 frequent하다. 역,이는 성립하지 않는다.
+  - if {b,d,n} is frequent so is {beer, diaper} 
   
+- Example of Apriori Algorithm
+  - Suppose that sup[min] = 2
+  
+  - data
+  tid | items
+  10 | A,C,D
+  20 | B,C,E
+  30 | A,B,C,E
+  40 | B,E
+ 
+ - first
+ 
+ Itemset | sup
+ {A} | 2
+ {B} | 3
+ {C} | 3
+ {D} | 1
+ {e} | 3
+
+- Updated Itemsets
+
+ Itemset | sup
+ {A} | 2
+ {B} | 3
+ {C} | 3
+  {e} | 3
