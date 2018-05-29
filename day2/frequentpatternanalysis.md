@@ -4,6 +4,8 @@
 
 ## Market-Basket Model
 - input
+- A Large set of items
+- A large set of baskets
 
 tid|items
 --|--
@@ -15,3 +17,11 @@ tid|items
 
 - Output
   - Rules Discovered : {Milk} --> {Coke}, {diaper, Milk} --> {Beer}
+
+- Want to discover association rules
+  - People who bought {x,y,z} to {y,z}
+ 
+## Example of Applications
+
+- Items = sentences
+- Baskets = a set of sentences
