@@ -35,3 +35,5 @@
 - if < 0.5 negatively
 - if > 0.5 positively
 
+#### Inbalanced Ratio
+- IR = | sup(A) - sup(B)| / (sup(A) + sup(B) - sup(AUB))
