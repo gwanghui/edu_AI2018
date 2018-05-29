@@ -84,6 +84,20 @@ tid|items
   - 2-itemset
   - 3-itemset
   - n-itemset
+- There are 100 items in the database.
+  - {a1,...,a100} Contains [1, 100] + [2, 100] + [3, 100] + [4, 100] + [100, 100] = 2^100 - 1
   
+- frequent : a minimum support threshold <= X 
+
+example
+
+tid|items
+--|--
+10| B,N,D
+20| B,C,D
+30| B, D, E
+40| N, E, M
+50| N, C, D, E, M
+
 
   
