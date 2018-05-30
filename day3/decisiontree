@@ -17,4 +17,4 @@
 ### Information Gain
 
 
-- Gain(A) = H(D) - I ~a~ (D)
+- Gain(A) = H(D) - I<sub>a</sub>(D)
