@@ -18,3 +18,8 @@
 
 
 - Gain(A) = H(D) - I<sub>a</sub>(D)
+```text
+         k
+H(D) = - ∑ p<sub>i</sub>log<sub>2<sub>P<sub>i</sub>
+        i=1
+```
