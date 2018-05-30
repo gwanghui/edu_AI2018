@@ -11,11 +11,13 @@
 ``` 
  
 - Sigmoid Fuction
+
 ```text
            L
 σ(x) = ------------
        1+e^-k(x-x0)
 ```
+
 - Odd
   - 이길 확률과 질 확률에 베팅
   - ln을 취해준다 ln(odds) = ln(p / (1-p))
