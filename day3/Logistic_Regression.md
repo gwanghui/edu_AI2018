@@ -6,7 +6,7 @@
 - f(x) = w0x0 + w1x1 + w2x2 + ... + wdxd
 ```text
          d
-- f(x) = ∑ wixi = w.Trans()x
+f(x) = ∑ wixi = w.Trans()x
         i=0
 ``` 
  
