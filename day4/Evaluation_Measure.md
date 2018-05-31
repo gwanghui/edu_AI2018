@@ -32,3 +32,4 @@ total | 6600 | 3400 | 10000
 - Completeness : True여야 하는 모수에서 얼마나 True로 계산했냐?
 - TP = TP / TP + FN
 
+- 보통의 경우 서로 상호 보완 관계이다.
