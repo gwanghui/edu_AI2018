@@ -6,7 +6,7 @@ Ca | True Positive (TP) | False Negative (FN)
 ~Ca | False Positive (FP) | True Negative (TN)
 
 
-|Play_Game=Yes|Play_Game=No|total
+qwe|Play_Game=Yes|Play_Game=No|total
 -|-|-|-
 Play_Game=Yes | 6100 | 900 | 7000
 Play_Game=No | 500 | 2500 | 3000
