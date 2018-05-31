@@ -18,3 +18,10 @@
 - 파라미터의 개수가 많은가?
 - 같은 파라미터의 개수 안에서 내부 값 차이가 얼마나 큰가?
 
+## Overfitting 을 없애보자
+### Generalization
+#### Regularization
+- Shrinking to zero
+- loss + regularization
+- weight decay, ridge regression
+
