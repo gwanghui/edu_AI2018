@@ -40,3 +40,14 @@ total | 6600 | 3400 | 10000
 - F = 2 * precision * recall / precision + recall
 - FB = weighted Measure of precision and recall
   - Assign B times as much weight to recall as to precision.
+
+### Sensitivity
+- True Positive recognition rate
+  - Sensitivity = TP / TP + FN
+
+### Specificity 
+- True Ngative recognition rate
+  - Specificity = TN / FP + TN
+  
+
+  
