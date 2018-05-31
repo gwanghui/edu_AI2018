@@ -49,5 +49,14 @@ total | 6600 | 3400 | 10000
 - True Ngative recognition rate
   - Specificity = TN / FP + TN
   
+### Precision-Recall Curves
+- Recall을 X축 Precision을 Y축으로 둔 뒤 계산
+- 통합해서 한눈에 보고 싶다.
+- 넓이를 바탕으로 모델을 평가
+
+### NDCG (Normalize DisCounted Gain)
+- ex) Top 10을 맞추는거보다 Top 1을 맞추는게 중요하다
+  - 위치 정보에 따라 Credit을 다르게 준다.
+- 
 
   
