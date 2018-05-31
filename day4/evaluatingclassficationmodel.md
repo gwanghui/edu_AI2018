@@ -25,3 +25,15 @@
 - loss + regularization
 - weight decay, ridge regression
 
+## Holdout Method?
+- data = traningSet + Test set
+
+## Cross-Validation (k-fold)
+- Data D is randomly partitioned into k mutually exclusive subsets {D₁, D₂, D₃, D₄...,Dk)
+- each approximately equal size.
+- 서브셋을 바꿔가면서 돌려보고 검증해본다
+
+### Leave-one-out
+- 한개만 빼서 테스트 해본다.
+- n = 100
+- k = 100
