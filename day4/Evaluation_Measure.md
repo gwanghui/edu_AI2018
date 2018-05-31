@@ -21,3 +21,14 @@ total | 6600 | 3400 | 10000
 
 ### Error rate 
 - 1 - accuracy
+
+
+### Precision
+- Exactness : true로 판단한 모수에서 True로 잘 판단한 경우
+- 관심있는 true값만 보자
+- TP / TP + FP
+
+### Recall
+- Completeness : True여야 하는 모수에서 얼마나 True로 계산했냐?
+- TP = TP / TP + FN
+
