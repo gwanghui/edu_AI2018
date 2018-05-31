@@ -1,6 +1,6 @@
 # Evaluating Classfication Model
-## Linear Basis Function
-- 선형식
+## Linear Basis Function Models
+- 선형식을 기준으로 만든 
 - y(w,x) = w0+ w1x1 + ㆍㆍㆍ + wdxd
 
 ## Polynomial Curve Fitting
