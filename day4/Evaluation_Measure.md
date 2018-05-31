@@ -33,3 +33,10 @@ total | 6600 | 3400 | 10000
 - TP = TP / TP + FN
 
 - 보통의 경우 서로 상호 보완 관계이다.
+
+### F-Measure ( F-Score )
+- Harmonic Mean (조화평균) of precision and recall
+
+- F = 2 * precision * recall / precision + recall
+- FB = weighted Measure of precision and recall
+  - Assign B times as much weight to recall as to precision.
