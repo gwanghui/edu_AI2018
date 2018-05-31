@@ -54,7 +54,7 @@ total | 6600 | 3400 | 10000
 - 통합해서 한눈에 보고 싶다.
 - 넓이를 바탕으로 모델을 평가
 
-### NDCG (Normalize DisCounted Gain)
+### NDCG (Normalize Discounted Cumulative Gain)
 - ex) Top 10을 맞추는거보다 Top 1을 맞추는게 중요하다
   - 위치 정보에 따라 Credit을 다르게 준다.
 - 
