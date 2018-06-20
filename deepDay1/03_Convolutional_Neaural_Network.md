@@ -21,9 +21,11 @@
 #### Forward pass
 
 #### Backpropagation
-
 - 각각의 Weight가 Loss를 줄이는 방향으로
 - 모든 Weight에 대한 기울기를 편미분해서 구해놓는다.
   - 1. weight update
   - 2. 다음 뉴런에 gradient 전달
   
+#### Spatial dimension
+- stride가 1일 때 7(N)*7 3(F)*3 -> 5*5
+- ((N - F)/ stride) +1
