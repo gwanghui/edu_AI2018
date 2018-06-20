@@ -29,3 +29,8 @@
 #### Spatial dimension
 - stride가 1일 때 7(N)*7 3(F)*3 -> 5*5
 - ((N - F)/ stride) +1
+- 1 * 1 convolution layer는 reduces the number of channells
+
+#### Activation function
+- sigmoid, tanh, ReLU, Leaky ReLU(평균이 0이 안된다!)
+- Maxout , ELU(적당한 알파를 찾아서 평균을 0으로 만드는..)
