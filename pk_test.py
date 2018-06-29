@@ -6,9 +6,13 @@ from glob import glob
 
 import numpy as np
 from scipy.io import wavfile
+from scipy import signal 
+
+os.environ["CUDA_VISIBLE_DEVICES"]="1"
 
 import tensorflow as tf
-
+import tensorflow.contrib.slim as slim
+import tensorflow.contrib.slim.nets as nets
 
 
 categories = ['yes','no','on','off','left','right','up','down','go','stop', 'unknown', 'silence']
@@ -16,13 +20,15 @@ id2name = { i:x for i,x in enumerate(categories)}
 name2id = { id2name[i]:i for i in id2name }
 
 data_root = './data/train'
+checkpoint_dir = './checkpoint'
 traindata_csvfile = 'train.csv'
 validdata_csvfile = 'valid.csv'
 slience_files =  glob(data_root+'/audio/{}/*.wav'.format('_background_noise_'))
 
 
+lr=0.05
 epoch=20
-batchsize=64
+batchsize=128
 categories_cnt = len(categories)
 
 
@@ -34,6 +40,7 @@ print(id2name)
 trainset = []
 validset = []
 with open(traindata_csvfile,'r') as traincsv:
+    #with open(validdata_csvfile,'r') as traincsv:
     csvreader = csv.reader(traincsv)
     trainset = [[x[0], int(x[1])] for x in csvreader]
     #trainset = [[wavfile.read(x[0])[1], int(x[1])] for x in csvreader]
@@ -48,8 +55,8 @@ with open(validdata_csvfile,'r') as validcsv:
     validfilename , validlabel_ori = list(validfilename), list(validlabel_ori)
 traincnt = len(trainlabel_ori)
 testcnt  = len(validlabel_ori)
-print(trainfilename[:3])
-print(trainlabel_ori[:3])
+#print(trainfilename[:3])
+#print(trainlabel_ori[:3])
 #print(trainset[:3])
 
 def hz_to_mel(freq):
@@ -77,7 +84,7 @@ def multi_ffts_to_mel(freq_array, n_mels=128):
 
 def audioframes2logmelspec(b_framed_signal, n_ffts=5, 
                            wvls_per_window_hinge=16, n_mel=128, 
-                           fft_l1=1024, sr=16000):
+                           fft_l1=1024, sr=16000.0):
     
     fft1_space = tf.lin_space(0., .5, 1+fft_l1//2)[1:]
     freq_list =[sr*fft1_space] 
@@ -112,92 +119,107 @@ def audioframes2logmelspec(b_framed_signal, n_ffts=5,
     #return tf.expand_dims(log_mel_spectro, -1), center_mel_freqs
     return tf.expand_dims(tf.squeeze(log_mel_spectro), -1), center_mel_freqs
 
+def log_specgram(audio, window_size=40, step_size=35, sample_rate=16000,  eps=1e-10):  #40, 35 -> output shape == (321, 193)
+    nperseg = int(round(window_size * sample_rate / 1e3))
+    noverlap = int(round(step_size * sample_rate / 1e3))
+    _, _, spec = signal.spectrogram(audio, fs=sample_rate,window='hann', nperseg=nperseg, noverlap=noverlap, detrend=False)
+    return np.expand_dims(np.log(spec.astype(np.float32) + eps), -1)
+
 def preprocessing(filepath, label):
     sr, wav = wavfile.read(filepath)
-    signal = wav.astype(np.float32) / np.iinfo(np.int16).max
-    print(type(signal))
+    gap = sr - len(wav)
+    lgap = np.random.randint(gap+1)
+    rgap = gap-lgap
+    wav = np.pad(wav, (lgap,rgap), 'constant', constant_values=(0, 0))
+    signal = wav.astype(np.float32) #/ np.iinfo(np.int16).max
     label = np.eye(categories_cnt,dtype=np.float32)[label]
-    return sr, signal, label
-    #return filepath, label
-    #label = np.eye(categories_cnt,dtype=np.float32)[label]
-    #def preprocessing(signal, label):
-    #    signal = tf.cast(signal, dtype=tf.float32)
-    #audio_binary = tf.read_file(filepath)
+    #return sr, signal, label
+    return log_specgram(signal), label
+    
 def preprocessing2(sr,signal,label):
-    #label = tf.one_hot(label, categories_cnt,dtype=tf.float32)
     b_signals = tf.expand_dims(signal, axis=0)
 
     b_framed_signal = tf.contrib.signal.frame(b_signals, 
                                       frame_length=1024, 
                                       frame_step = 32)
-    log_mel_spectro, center_mel_freqs = audioframes2logmelspec(b_framed_signal, sr=sr)
+    log_mel_spectro, center_mel_freqs = audioframes2logmelspec(b_framed_signal, sr=tf.cast(sr,tf.float32))
     log_mel_spectro = tf.reshape(log_mel_spectro, [469, 128, 1])
-    label = tf.reshape(label, [categories_cnt])
-    #return log_mel_spectro, label
-    return signal,label
+    
+    return log_mel_spectro, label
+    
 
 def get_iterator(data_a, data_b):
-    print(type(data_a[0]), type(data_b[0]))
-    inputs = tf.data.Dataset.from_tensor_slices((data_a, data_b))
+    inputs = tf.data.Dataset.from_tensor_slices((data_a, data_b),)
     ##preprocessing = lambda a,b: tf.py_func(preprocessing, [a,b], [ tf.float32, tf.float32, tf.int32])
-    preprocessing = lambda a,b: tf.py_func(preprocessing, [a,b], [tf.float32,  tf.float32, tf.float32 ])
+    preprocess = lambda a,b: tf.py_func(preprocessing, [a,b], [  tf.float32, tf.float32 ])
+    #preprocess = lambda a,b: tf.py_func(preprocessing, [a,b], [  tf.int64, tf.float32, tf.float32 ])
     ##.map(preprocessing2,num_parallel_calls=4)
     
-    inputs = inputs.map(preprocessing).map(preprocessing2).shuffle(buffer_size=batchsize*3).prefetch(buffer_size=batchsize*6).batch(batchsize).repeat()
+    inputs = inputs.map(preprocess, num_parallel_calls=8)
+    #inputs = inputs.map(preprocessing2, num_parallel_calls=8)
+    #inputs = inputs.shuffle(buffer_size=batchsize*8)
+    inputs = inputs.prefetch(buffer_size=batchsize*20)
+    inputs = inputs.batch(batchsize)
+    inputs = inputs.repeat()
     iterator = inputs.make_initializable_iterator()
     iterator_init_op = iterator.initializer
     return iterator, iterator_init_op
 
 def net(layer, reuse , is_training):
-    layer = tf.reshape(layer, [-1, 469, 128, 1])
-    """    layer, endpoint = nets.resnet_v1.resnet_v1_50(layer,5, is_training=is_training, reuse=reuse)
+    layer = tf.reshape(layer, [-1, 321, 193, 1])
+    
+    layer, endpoint = nets.resnet_v1.resnet_v1_50(layer, categories_cnt, is_training=is_training, reuse=reuse)
     layer = tf.layers.flatten(layer)
     out = tf.nn.softmax(layer) if not is_training else layer
     return out
     """
-    with tf.variable_scope('net', reuse = reuse,):
+    with tf.variable_scope('net', reuse = reuse):
         
-        layer = tf.layers.conv2d(layer, 32, kernel_size=3, padding='same', trainable=is_training)
+        layer = tf.layers.conv2d(layer, 32, kernel_size=13, padding='same', trainable=is_training)
         layer = tf.layers.max_pooling2d(layer, pool_size=2, strides=2)
 
-        layer = tf.layers.conv2d(layer, 64, kernel_size=3, padding='same', trainable=is_training)
+        layer = tf.layers.conv2d(layer, 64, kernel_size=13, padding='same', trainable=is_training)
         layer = tf.layers.max_pooling2d(layer, pool_size=2, strides=2)
         
-        layer = tf.layers.conv2d(layer, 128, kernel_size=3, padding='same', trainable=is_training)
+        layer = tf.layers.conv2d(layer, 128, kernel_size=13, padding='same', trainable=is_training)
         layer = tf.layers.max_pooling2d(layer, pool_size=2, strides=2)
         
         layer = tf.layers.flatten(layer)
-        layer = tf.layers.dense(layer,128, trainable=is_training)
+        layer = tf.layers.dense(layer,2048, trainable=is_training)
         
         layer = tf.layers.dropout(layer, rate=0.5, training=is_training)
         layer = tf.layers.dense(layer,categories_cnt , trainable=is_training)
         out = tf.nn.softmax(layer) if not is_training else layer
         return out
+    """
 
 
 # TF DATA API를 이용한 train iterator 정의
 train_iterator, train_iterator_init_op = get_iterator(trainfilename, trainlabel_ori)
 trainwav , trainlabel  = train_iterator.get_next()
-#logit_train = net(trainwav , reuse = False, is_training=True)
+logit_train = net(trainwav , reuse = False, is_training=True)
 
 # TF DATA API를 이용한 test iterator 정의
 test_iterator ,test_iterator_init_op  = get_iterator(validfilename, validlabel_ori)
 testwav , testlabel  = test_iterator.get_next()
-#logit_test  = net(testwav  , reuse = True, is_training=False)
+logit_test  = net(testwav  , reuse = True, is_training=False)
 
 # 학습을 위한 코스트 함수 정의
-#cost = tf.reduce_mean(tf.losses.softmax_cross_entropy(trainlabel, logit_train))
-#optimizer = tf.train.AdamOptimizer().minimize(cost)
+cost = tf.reduce_mean(tf.losses.softmax_cross_entropy(trainlabel, logit_train))
+optimizer = tf.train.AdamOptimizer().minimize(cost)
+#optimizer = tf.train.RMSPropOptimizer(learning_rate=lr).minimize(cost)
 
 # 테스트 단계에서 프리딕션 정확도 측정
-#testcorrect_pred = tf.equal(tf.argmax(logit_test,1), tf.argmax(testlabel,1))
-#testaccuracy = tf.reduce_mean(tf.cast(testcorrect_pred, tf.float32))
+testcorrect_pred = tf.equal(tf.argmax(logit_test,1), tf.argmax(testlabel,1))
+testaccuracy = tf.reduce_mean(tf.cast(testcorrect_pred, tf.float32))
+calc_confusion_matrix = tf.confusion_matrix( tf.argmax(testlabel,1), tf.argmax(logit_test,1))
 
-
-print("#################################")
-starttime =  datetime.datetime.now()
 
 step = traincnt//batchsize
+print("#"*(step//(step//30) ))
+starttime =  datetime.datetime.now()
+
+
 
 config=tf.ConfigProto()
 config.gpu_options.allow_growth = True
@@ -207,33 +229,53 @@ with tf.Session(config = config) as sess:
     sess.run(tf.global_variables_initializer())
     sess.run(train_iterator_init_op)
     sess.run(test_iterator_init_op)
+    saver = tf.train.Saver()
+    #######
+    '''
+    checkpoint_list = tf.train.latest_checkpoint(checkpoint_dir)
+    print(checkpoint_list)
+    if checkpoint_list != None:
+        restore_path = saver.restore(sess, checkpoint_list)
+        print("Restore from : " , restore_path, datetime.datetime.now().strftime('%Y%m%d_%H%M%S'))
     
+    
+    ckpt_path = saver.save(sess, checkpoint_dir+'/train_1',global_step=epoch)
+    '''
+    #######
     print("optimize start!!")
     #print(sess.run(trainimg))
-    for i in range(1,2):#step*epoch):
+    for i in range(1,step*epoch):
         # 정의한 optimizer 연산으로 학습!!
-        print(sess.run(trainwav))
-        print(sess.run(trainlabel))
-        #sess.run(optimizer)
+        sess.run(optimizer)
         if i%(step//30)==0:
             print("*", end='')
         if i % step == 0:
             # 입력 배치 사이즈 만큼 정확도 측정을 하기때문에 테스트 데이터셋 사이즈 만큼 루프 후 엔빵
+            chpt_filename = '/train_net-{}_lr-{}_bs-{}_'.format('resnet50', lr, batchsize)
+            print("save checkpoint : {}".format(chpt_filename))
+            ckpt_path = saver.save(sess, checkpoint_dir+chpt_filename ,global_step=epoch)
             print("TEST!!! : ", datetime.datetime.now()-starttime)
-            #acc = 0
-            #for j in range((testcnt//batchsize)//10):
-            #    acc += sess.run(testaccuracy)
+            acc = 0
+            for j in range((testcnt//batchsize)//20):
+                #acc += sess.run(testaccuracy)
+                acc += sess.run(calc_confusion_matrix)
+            print("step {}, accuracy :\n".format(i), acc)
+            
             #print("step {}, accuracy : {}".format(i,acc/((testcnt//batchsize)+1)))
             # 이게 되나 모르겠는데.. 랜덤하게 argumentation 하려고...
             #sess.run(train_iterator_init_op)
     # 입력 배치 사이즈 만큼 정확도 측정을 하기때문에 valid 데이터셋 사이즈 만큼 루프 후 엔빵
-    #validacc = 0
-    #for j in range(validcnt//batchsize):
-    #    validacc += sess.run(validaccuracy)
-    #print("finally, accuracy : {}".format(validacc/((validcnt//batchsize)+1)))
-    #acc = 0
-    #for j in range(testcnt//batchsize):
-    #    acc += sess.run(testaccuracy)
-    #print("step {}, accuracy : {}".format(i,acc/((testcnt//batchsize)+1)))
+    ##########################################################################
+    '''
+    validacc = 0
+    for j in range(validcnt//batchsize):
+        validacc += sess.run(validaccuracy)
+    print("finally, accuracy : {}".format(validacc/((validcnt//batchsize)+1)))
+    acc = 0
+    for j in range(testcnt//batchsize):
+        acc += sess.run(testaccuracy)
+    print("step {}, accuracy : {}".format(i,acc/((testcnt//batchsize)+1)))
+    '''
+    ##########################################################################
 
 print("================== e n d ==================")
