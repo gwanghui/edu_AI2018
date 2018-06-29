@@ -7,8 +7,6 @@ from glob import glob
 import numpy as np
 from scipy.io import wavfile
 
-os.environ["CUDA_VISIBLE_DEVICES"]="1"
-
 import tensorflow as tf
 
 
